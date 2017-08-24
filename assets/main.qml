@@ -16,74 +16,90 @@
 
 import bb.cascades 1.4
 
-TabbedPane {
-    showTabsOnActionBar: true
-    Tab { //First tab
-        // Localized text with the dynamic translation and locale updates support
-        title: qsTr("Tab 1") + Retranslate.onLocaleOrLanguageChanged
-        Page {
+Page {
+    Container {
+        layout: AbsoluteLayout {
 
-            Container {
-                navigation.childrenBehavior: ChildrenNavigationBehavior.Default
-                property int clicked: 0
-                onClickedChanged: {
-                    word.text = "clicked " + clicked;
-                    clicked ++;
-                }
+        }
+        property int current: -1
+        property int tap: 0
+        onTouch: {
+            if (event.touchType == TouchType.Move) {
 
-                Label {
-                    text: qsTr(" ")
+                if (current == -1) {
+                    current = event.localX;
                 }
-                Label {
-                    id: word
-                    text: qsTr("Question")
-                    horizontalAlignment: HorizontalAlignment.Center
-                    textStyle {
-                        fontSize: FontSize.XXLarge
-                        textAlign: TextAlign.Center
-                    }
+                if (ui.sdu(10) < (event.localX - current)) {
+                    word1.wordText = qsTr("Right") + (event.localX - current);
+                    word1.nextWord();
+                } else if (ui.sdu(10) < (current - event.localX)) {
+                    word1.wordText = qsTr("Left") + (current - event.localX);
+                    word1.previousWord();
                 }
-                Container {
-                    horizontalAlignment: HorizontalAlignment.Center
-                    layout: GridLayout {
-                        columnCount: 2
-                    }
-                    Label {
-                        id: type
-                        text: qsTr("noun ")
-                        textStyle.fontSize: FontSize.Small
-                        textStyle.fontStyle: FontStyle.Italic
-                        horizontalAlignment: HorizontalAlignment.Left
-                        rightMargin: 10.0
-                        verticalAlignment: VerticalAlignment.Top
-                        implicitLayoutAnimationsEnabled: true
-
-                    }
-                    Label {
-                        id: ipa
-                        text: qsTr("/") + qsTr("ˈkwes.tʃən") + qsTr("/")
-                        textFormat: TextFormat.Plain
-                        horizontalAlignment: HorizontalAlignment.Center
-                        verticalAlignment: VerticalAlignment.Center
-                        textStyle {
-                            fontFamily: 'DejaVu Sans'
-                            fontSize: FontSize.Large
-                            color: Color.create(191, 0, 255)
-                        }
-                    }
-                }
-
+            } else if (event.touchType == TouchType.Up) {
+                //
+            } else {
+                current = event.localX;
+                word1.wordText = qsTr("---")
             }
         }
-    } //End of first tab
-    Tab { //Second tab
-        title: qsTr("Tab 2") + Retranslate.onLocaleOrLanguageChanged
-        Page {
-            Container {
-                Label {
-                    text: qsTr("Second tab") + Retranslate.onLocaleOrLanguageChanged
-                }
+        Button {
+            text: qsTr("Create")
+            maxWidth: 200
+            layoutProperties: AbsoluteLayoutProperties {
+                positionX: 350
+                positionY: 600
+            }
+            onClicked: {
+                _app.createRecord("a", "b", "c", "d")
             }
         }
-    } //End of second tab
+        Button {
+            text: qsTr("Read")
+            maxWidth: 200
+            layoutProperties: AbsoluteLayoutProperties {
+                positionX: 100
+                positionY: 600
+            }
+            onClicked: {
+                _app.readRecords();
+            }
+        }
+        Word {
+            id: word1
+            layoutProperties: AbsoluteLayoutProperties {
+                positionX: 0
+                positionY: ui.du(5)
+            }
+            showNextAnimStartX: - ui.sdu(80)
+            showPreAnimStartX: ui.sdu(80)
+            onChangeNextWord: {
+                nextWordTail();
+            }
+            onChangePreviosWord: {
+                previosWordTail();
+            }
+        }
+        ListView {
+            layoutProperties: AbsoluteLayoutProperties {
+                positionX: 0
+                positionY: 200
+            }
+            horizontalAlignment: HorizontalAlignment.Fill
+
+            dataModel: _app.dataModel
+
+            listItemComponents: [
+                ListItemComponent {
+                    type: "item"
+                    StandardListItem {
+                        title: qsTr("%1 %2").arg(ListItemData.word).arg(ListItemData.ipa)
+                        description: qsTr("Unique Key: %1").arg(ListItemData.id)
+                    }
+                }
+            ]
+            accessibility.name: "List"
+        }
+
+    }
 }

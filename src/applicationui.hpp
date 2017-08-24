@@ -18,7 +18,8 @@
 #define ApplicationUI_HPP_
 
 #include <QObject>
-
+#include <bb/cascades/GroupDataModel>
+using namespace bb::cascades;
 namespace bb
 {
     namespace cascades
@@ -34,17 +35,30 @@ class QTranslator;
  *
  * Use this object to create and init app UI, to create context objects, to register the new meta types etc.
  */
-class ApplicationUI : public QObject
+class ApplicationUI: public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bb::cascades::DataModel* dataModel READ dataModel CONSTANT)
 public:
+
+    Q_INVOKABLE void readRecords();
+    Q_INVOKABLE bool createRecord();
+
     ApplicationUI();
-    virtual ~ApplicationUI() {}
+    virtual ~ApplicationUI()
+    {
+    }
 private slots:
     void onSystemLanguageChanged();
 private:
     QTranslator* m_pTranslator;
     bb::cascades::LocaleHandler* m_pLocaleHandler;
+    void alert(const QString &message);
+    void initDataModel();
+    bool initDatabase();
+    bb::cascades::GroupDataModel* dataModel() const;
+    GroupDataModel* m_dataModel;
+
 };
 
 #endif /* ApplicationUI_HPP_ */
