@@ -14,11 +14,11 @@ class Word: public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY( int id READ getId )
-    Q_PROPERTY( QString word READ getWord )
-    Q_PROPERTY( QString ipa READ getIpa )
-    Q_PROPERTY( QString type READ getType )
-    Q_PROPERTY( QString meaning READ getMeaning )
+    Q_PROPERTY( int id READ getId WRITE setId FINAL)
+    Q_PROPERTY( QString word READ getWord WRITE setWord FINAL)
+    Q_PROPERTY( QString ipa READ getIpa WRITE setIpa FINAL)
+    Q_PROPERTY( QString type READ getType WRITE setType FINAL )
+    Q_PROPERTY( QString meaning READ getMeaning WRITE setMeaning FINAL)
 
 public:
     Word(QObject *parent =0);

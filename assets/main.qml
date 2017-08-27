@@ -15,14 +15,22 @@
  */
 
 import bb.cascades 1.4
+import bb.cascades.pickers 1.0
 
 Page {
-    Container {
+    content: Container {
         layout: AbsoluteLayout {
 
         }
+        id: root
         property int current: -1
         property int tap: 0
+        property bool databaseOpen: false
+        property int currentId: 0
+        property string word
+        property string ipa
+        property string type
+        property string meaning
         onTouch: {
             if (event.touchType == TouchType.Move) {
 
@@ -30,43 +38,20 @@ Page {
                     current = event.localX;
                 }
                 if (ui.sdu(10) < (event.localX - current)) {
-                    word1.wordText = qsTr("Right") + (event.localX - current);
-                    word1.nextWord();
+                    wordView.wordText = root.word;
+                    wordView.nextWord();
                 } else if (ui.sdu(10) < (current - event.localX)) {
-                    word1.wordText = qsTr("Left") + (current - event.localX);
-                    word1.previousWord();
+                    wordView.wordText = qsTr("Left") + (current - event.localX);
+                    wordView.previousWord();
                 }
             } else if (event.touchType == TouchType.Up) {
-                //
             } else {
                 current = event.localX;
-                word1.wordText = qsTr("---")
-            }
-        }
-        Button {
-            text: qsTr("Create")
-            maxWidth: 200
-            layoutProperties: AbsoluteLayoutProperties {
-                positionX: 350
-                positionY: 600
-            }
-            onClicked: {
-                _app.createRecord("a", "b", "c", "d")
-            }
-        }
-        Button {
-            text: qsTr("Read")
-            maxWidth: 200
-            layoutProperties: AbsoluteLayoutProperties {
-                positionX: 100
-                positionY: 600
-            }
-            onClicked: {
-                _app.readRecords();
+                wordView.wordText = qsTr("---")
             }
         }
         Word {
-            id: word1
+            id: wordView
             layoutProperties: AbsoluteLayoutProperties {
                 positionX: 0
                 positionY: ui.du(5)
@@ -74,32 +59,35 @@ Page {
             showNextAnimStartX: - ui.sdu(80)
             showPreAnimStartX: ui.sdu(80)
             onChangeNextWord: {
+                _app.readRecords();
+                wordView.wordText = _app.word;
                 nextWordTail();
             }
             onChangePreviosWord: {
+                _app.createRecord();
+                wordView.wordText = _app.word;
                 previosWordTail();
             }
         }
-        ListView {
+
+        TextArea {
             layoutProperties: AbsoluteLayoutProperties {
                 positionX: 0
-                positionY: 200
+                positionY: ui.sdu(30)
             }
-            horizontalAlignment: HorizontalAlignment.Fill
-
-            dataModel: _app.dataModel
-
-            listItemComponents: [
-                ListItemComponent {
-                    type: "item"
-                    StandardListItem {
-                        title: qsTr("%1 %2").arg(ListItemData.word).arg(ListItemData.ipa)
-                        description: qsTr("Unique Key: %1").arg(ListItemData.id)
-                    }
-                }
-            ]
-            accessibility.name: "List"
+            id: viewMeaning
+            text: _app.meaning
         }
-
+        Button {
+            id: btnSelectFile
+            text: qsTr("Load")
+            layoutProperties: AbsoluteLayoutProperties {
+                positionX: 0
+                positionY: ui.sdu(50)
+            }
+            onClicked: {
+                _app.showFilePicker();
+            }
+        }
     }
 }

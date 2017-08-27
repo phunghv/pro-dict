@@ -16,6 +16,7 @@
 
 #include "applicationui.hpp"
 #include "Word.hpp"
+#include "DictExtractor.hpp"
 
 #include <bb/cascades/Application>
 #include <bb/cascades/QmlDocument>
@@ -25,10 +26,12 @@
 #include <bb/cascades/LocaleHandler>
 #include <QtSql/QtSql>
 #include <bb/system/SystemDialog>
+#include <bb/cascades/pickers/FilePicker>
 
 using namespace bb::cascades;
 using namespace bb::data;
 using namespace bb::system;
+using namespace bb::cascades::pickers;
 
 const QString DB_PATH = "./data/proDictDB.db";
 
@@ -39,6 +42,10 @@ ApplicationUI::ApplicationUI() :
     m_pTranslator = new QTranslator(this);
     m_pLocaleHandler = new LocaleHandler(this);
     initDataModel();
+    m_word = "";
+    m_type = "";
+    m_meaning = "";
+    m_ipa = "";
     bool res = QObject::connect(m_pLocaleHandler, SIGNAL(systemLanguageChanged()), this,
             SLOT(onSystemLanguageChanged()));
     // This is only available in Debug builds
@@ -61,6 +68,11 @@ ApplicationUI::ApplicationUI() :
     Application::instance()->setScene(root);
     const bool dbInited = initDatabase();
     root->setProperty("databaseOpen", dbInited);
+    root->setProperty("word", m_word);
+    root->setProperty("ipa", m_ipa);
+    root->setProperty("meaning", m_meaning);
+    root->setProperty("type", m_type);
+    currentWord = 0;
 }
 
 void ApplicationUI::initDataModel()
@@ -82,6 +94,50 @@ void ApplicationUI::onSystemLanguageChanged()
     }
 }
 
+void ApplicationUI::showFilePicker()
+{
+    //alert(tr("Select file picker"));
+    FilePicker* filePicker = new FilePicker();
+    filePicker->setType(FileType::Other);
+    filePicker->setTitle("Import dict");
+    filePicker->setMode(FilePickerMode::Picker);
+    filePicker->setDirectories(QStringList("/"));
+    filePicker->open();
+    bool connectResult;
+
+    // Since the variable is not used in the app, this line is added to avoid a
+    // compiler warning
+    Q_UNUSED(connectResult);
+
+    connectResult = QObject::connect(filePicker, SIGNAL(fileSelected(const QStringList&)), this,
+            SLOT(onFileSelected(const QStringList&)));
+
+    // The Q_ASSERT macro is only available in Debug builds
+    Q_ASSERT(connectResult);
+
+    // Connect the canceled() signal with the slot
+    connectResult = QObject::connect(filePicker, SIGNAL(canceled()), this, SLOT(onCanceled()));
+
+    // The Q_ASSERT macro is only available in Debug builds
+    Q_ASSERT(connectResult);
+}
+void ApplicationUI::onFileSelected(const QStringList&list)
+{
+    qDebug() << "Size : " << list.size();
+    DictExtractor dict;
+    for (int i = 0; i < list.size(); i++) {
+        qDebug() << list.value(i);
+        QString ld2file = list.value(i);
+        QString outfile = list.value(i) + "_out";
+        dict.loadFile(ld2file, outfile);
+        // Lingoes ldx(ld2file, true);
+        // ldx.extractToFile(outfile);
+    }
+}
+void ApplicationUI::onCanceled()
+{
+    qDebug() << "Cancel pick file";
+}
 bool ApplicationUI::initDatabase()
 {
     QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE");
@@ -95,15 +151,15 @@ bool ApplicationUI::initDatabase()
     }
 
     SqlDataAccess *sqlda = new SqlDataAccess(DB_PATH);
-    sqlda->execute("DROP TABLE IF EXISTS words");
-    if (!sqlda->hasError()) {
-        qDebug() << "Table dropped.";
-    } else {
-        const DataAccessError error = sqlda->error();
-        alert(tr("Drop table error: %1").arg(error.errorMessage()));
-    }
+//    sqlda->execute("DROP TABLE IF EXISTS words");
+//    if (!sqlda->hasError()) {
+//        qDebug() << "Table dropped.";
+//    } else {
+//        const DataAccessError error = sqlda->error();
+//        alert(tr("Drop table error: %1").arg(error.errorMessage()));
+//    }
 
-    const QString createSQL = "CREATE TABLE words "
+    const QString createSQL = "CREATE TABLE IF NOT EXIST words "
             "  (id INTEGER PRIMARY KEY AUTOINCREMENT, "
             "  word VARCHAR, "
             "  ipa VARCHAR, "
@@ -117,15 +173,31 @@ bool ApplicationUI::initDatabase()
         alert(tr("Create table error: %1").arg(error.errorMessage()));
         return false;
     }
-
     return true;
 }
 GroupDataModel* ApplicationUI::dataModel() const
 {
     return m_dataModel;
 }
+QString ApplicationUI::word() const
+{
+    return m_word;
+}
+QString ApplicationUI::type() const
+{
+    return m_type;
+}
+QString ApplicationUI::ipa() const
+{
+    return m_ipa;
+}
+QString ApplicationUI::meaning() const
+{
+    return m_meaning;
+}
 bool ApplicationUI::createRecord()
 {
+    qDebug() << "Run createRecord";
     SqlDataAccess *sqlda = new SqlDataAccess(DB_PATH);
     QVariantList contact;
     QString word = "lass";
@@ -160,28 +232,48 @@ void ApplicationUI::readRecords()
     //    The below example is not a prepared statement and does not use bindings as
     //    there is no user input to accept.
 
-    const QString sqlQuery = "SELECT id, word, ipa, type, meaning FROM words";
-
-    QVariant result = sqlda->execute(sqlQuery);
+    const QString sqlQuery = "SELECT id, word, ipa, type, meaning FROM words WHERE id = :id";
+    QVariantList params;
+    params << currentWord;
+    QVariant result = sqlda->execute(sqlQuery, params);
     if (!sqlda->hasError()) {
         int recordsRead = 0;
         m_dataModel->clear();
         if (!result.isNull()) {
             QVariantList list = result.value<QVariantList>();
             recordsRead = list.size();
-            for (int i = 0; i < recordsRead; i++) {
-                QVariantMap map = list.at(i).value<QVariantMap>();
-                Word *word = new Word(map["id"].toInt(), map["word"].toString(),
+            if (recordsRead > 0) {
+                QVariantMap map = list.at(0).value<QVariantMap>();
+                Word* word1 = new Word(map["id"].toInt(), map["word"].toString(),
                         map["ipa"].toString(), map["type"].toString(), map["meaning"].toString());
-                Q_UNUSED(word);
-                m_dataModel->insert(word);
+                currentWord = map["id"].toInt();
+                m_word = map["word"].toString();
+                m_ipa = map["ipa"].toString();
+                m_type = map["type"].toString();
+                m_meaning = map["meaning"].toString();
+                qDebug() << "Set" << m_word <<"::"<< m_meaning;
+                m_dataModel->insert(word1);
             }
+//            for (int i = 0; i < recordsRead; i++) {
+//                QVariantMap map = list.at(i).value<QVariantMap>();
+//                Word *word = new Word(map["id"].toInt(), map["word"].toString(),
+//                        map["ipa"].toString(), map["type"].toString(), map["meaning"].toString());
+//                Q_UNUSED(word);
+//                m_dataModel->insert(word);
+//            }
+
         }
 
-        qDebug() << "Read " << recordsRead << " records succeeded";
+        qDebug() << "Read " << recordsRead << " records succeeded + ID: " << currentWord;
 
         if (recordsRead == 0) {
             alert(tr("The customer table is empty."));
+            currentWord--;
+            if (currentWord < 0) {
+                currentWord = 1;
+            }
+        } else {
+            currentWord++;
         }
     } else {
         alert(tr("Read records failed: %1").arg(sqlda->error().errorMessage()));

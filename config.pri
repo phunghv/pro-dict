@@ -4,53 +4,81 @@ BASEDIR = $$quote($$_PRO_FILE_PWD_)
 device {
     CONFIG(debug, debug|release) {
         profile {
-            INCLUDEPATH += $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+            INCLUDEPATH += $$quote(${QNX_TARGET}/usr/include/bb/cascades/datamanager) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXmlPatterns) \
                 $$quote(${QNX_TARGET}/usr/include/bb/data) \
-                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtGui) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXml) \
                 $$quote(${QNX_TARGET}/usr/include/bb) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
                 $$quote(${QNX_TARGET}/usr/include/qt4/QtDeclarative) \
                 $$quote(${QNX_TARGET}/usr/include/bb/system)
 
-            DEPENDPATH += $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+            DEPENDPATH += $$quote(${QNX_TARGET}/usr/include/bb/cascades/datamanager) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXmlPatterns) \
                 $$quote(${QNX_TARGET}/usr/include/bb/data) \
-                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtGui) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXml) \
                 $$quote(${QNX_TARGET}/usr/include/bb) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
                 $$quote(${QNX_TARGET}/usr/include/qt4/QtDeclarative) \
                 $$quote(${QNX_TARGET}/usr/include/bb/system)
 
-            LIBS += -lQtCore \
+            LIBS += -lbbcascades \
+                -lbbcascadesdatamanager \
+                -lQtCore \
+                -lQtXml \
+                -lQtGui \
                 -lQtSql \
                 -lsqlite3 \
                 -lQtDeclarative \
+                -lbbcascadespickers \
                 -lbbsystem \
                 -lbb \
-                -lbbdata
+                -lbbdata \
+                -lQtXmlPatterns
 
             CONFIG += \
                 config_pri_assets \
                 config_pri_source_group1
         } else {
-            INCLUDEPATH += $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+            INCLUDEPATH += $$quote(${QNX_TARGET}/usr/include/bb/cascades/datamanager) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXmlPatterns) \
                 $$quote(${QNX_TARGET}/usr/include/bb/data) \
-                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtGui) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXml) \
                 $$quote(${QNX_TARGET}/usr/include/bb) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
                 $$quote(${QNX_TARGET}/usr/include/qt4/QtDeclarative) \
                 $$quote(${QNX_TARGET}/usr/include/bb/system)
 
-            DEPENDPATH += $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+            DEPENDPATH += $$quote(${QNX_TARGET}/usr/include/bb/cascades/datamanager) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXmlPatterns) \
                 $$quote(${QNX_TARGET}/usr/include/bb/data) \
-                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtGui) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXml) \
                 $$quote(${QNX_TARGET}/usr/include/bb) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
                 $$quote(${QNX_TARGET}/usr/include/qt4/QtDeclarative) \
                 $$quote(${QNX_TARGET}/usr/include/bb/system)
 
-            LIBS += -lQtCore \
+            LIBS += -lbbcascades \
+                -lbbcascadesdatamanager \
+                -lQtCore \
+                -lQtXml \
+                -lQtGui \
                 -lQtSql \
                 -lsqlite3 \
                 -lQtDeclarative \
+                -lbbcascadespickers \
                 -lbbsystem \
                 -lbb \
-                -lbbdata
+                -lbbdata \
+                -lQtXmlPatterns
 
             CONFIG += \
                 config_pri_assets \
@@ -61,27 +89,41 @@ device {
 
     CONFIG(release, debug|release) {
         !profile {
-            INCLUDEPATH += $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+            INCLUDEPATH += $$quote(${QNX_TARGET}/usr/include/bb/cascades/datamanager) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXmlPatterns) \
                 $$quote(${QNX_TARGET}/usr/include/bb/data) \
-                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtGui) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXml) \
                 $$quote(${QNX_TARGET}/usr/include/bb) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
                 $$quote(${QNX_TARGET}/usr/include/qt4/QtDeclarative) \
                 $$quote(${QNX_TARGET}/usr/include/bb/system)
 
-            DEPENDPATH += $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+            DEPENDPATH += $$quote(${QNX_TARGET}/usr/include/bb/cascades/datamanager) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXmlPatterns) \
                 $$quote(${QNX_TARGET}/usr/include/bb/data) \
-                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtGui) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXml) \
                 $$quote(${QNX_TARGET}/usr/include/bb) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
                 $$quote(${QNX_TARGET}/usr/include/qt4/QtDeclarative) \
                 $$quote(${QNX_TARGET}/usr/include/bb/system)
 
-            LIBS += -lQtCore \
+            LIBS += -lbbcascades \
+                -lbbcascadesdatamanager \
+                -lQtCore \
+                -lQtXml \
+                -lQtGui \
                 -lQtSql \
                 -lsqlite3 \
                 -lQtDeclarative \
+                -lbbcascadespickers \
                 -lbbsystem \
                 -lbb \
-                -lbbdata
+                -lbbdata \
+                -lQtXmlPatterns
 
             CONFIG += \
                 config_pri_assets \
@@ -93,27 +135,41 @@ device {
 simulator {
     CONFIG(debug, debug|release) {
         !profile {
-            INCLUDEPATH += $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+            INCLUDEPATH += $$quote(${QNX_TARGET}/usr/include/bb/cascades/datamanager) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXmlPatterns) \
                 $$quote(${QNX_TARGET}/usr/include/bb/data) \
-                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtGui) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXml) \
                 $$quote(${QNX_TARGET}/usr/include/bb) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
                 $$quote(${QNX_TARGET}/usr/include/qt4/QtDeclarative) \
                 $$quote(${QNX_TARGET}/usr/include/bb/system)
 
-            DEPENDPATH += $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+            DEPENDPATH += $$quote(${QNX_TARGET}/usr/include/bb/cascades/datamanager) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtSql) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXmlPatterns) \
                 $$quote(${QNX_TARGET}/usr/include/bb/data) \
-                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtGui) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtXml) \
                 $$quote(${QNX_TARGET}/usr/include/bb) \
+                $$quote(${QNX_TARGET}/usr/include/qt4/QtCore) \
                 $$quote(${QNX_TARGET}/usr/include/qt4/QtDeclarative) \
                 $$quote(${QNX_TARGET}/usr/include/bb/system)
 
-            LIBS += -lQtCore \
+            LIBS += -lbbcascades \
+                -lbbcascadesdatamanager \
+                -lQtCore \
+                -lQtXml \
+                -lQtGui \
                 -lQtSql \
                 -lsqlite3 \
                 -lQtDeclarative \
+                -lbbcascadespickers \
                 -lbbsystem \
                 -lbb \
-                -lbbdata
+                -lbbdata \
+                -lQtXmlPatterns
 
             CONFIG += \
                 config_pri_assets \
@@ -130,11 +186,13 @@ config_pri_assets {
 
 config_pri_source_group1 {
     SOURCES += \
+        $$quote($$BASEDIR/src/DictExtractor.cpp) \
         $$quote($$BASEDIR/src/Word.cpp) \
         $$quote($$BASEDIR/src/applicationui.cpp) \
         $$quote($$BASEDIR/src/main.cpp)
 
     HEADERS += \
+        $$quote($$BASEDIR/src/DictExtractor.hpp) \
         $$quote($$BASEDIR/src/Word.hpp) \
         $$quote($$BASEDIR/src/applicationui.hpp)
 }
