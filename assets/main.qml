@@ -75,6 +75,7 @@ Page {
                 positionX: 0
                 positionY: ui.sdu(30)
             }
+            maxWidth: ui.sdu(80)
             id: viewMeaning
             text: _app.meaning
         }

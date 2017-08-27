@@ -85,7 +85,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="83"/>
+        <location filename="../assets/main.qml" line="84"/>
         <source>Load</source>
         <translation type="unfinished"></translation>
     </message>

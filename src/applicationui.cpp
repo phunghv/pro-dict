@@ -159,7 +159,7 @@ bool ApplicationUI::initDatabase()
 //        alert(tr("Drop table error: %1").arg(error.errorMessage()));
 //    }
 
-    const QString createSQL = "CREATE TABLE IF NOT EXIST words "
+    const QString createSQL = "CREATE TABLE IF NOT EXISTS words "
             "  (id INTEGER PRIMARY KEY AUTOINCREMENT, "
             "  word VARCHAR, "
             "  ipa VARCHAR, "
