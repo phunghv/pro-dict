@@ -27,6 +27,13 @@
 #include <QtSql/QtSql>
 #include <bb/system/SystemDialog>
 #include <bb/cascades/pickers/FilePicker>
+#include <QVariant>
+#include <QMap>
+
+#include <bb/cascades/GroupDataModel>
+#include <bb/cascades/ListView>
+#include <bb/cascades/Page>
+#include <bb/data/JsonDataAccess>
 
 using namespace bb::cascades;
 using namespace bb::data;
@@ -66,8 +73,8 @@ ApplicationUI::ApplicationUI() :
 
     // Set created root object as the application scene
     Application::instance()->setScene(root);
-    const bool dbInited = initDatabase();
-    root->setProperty("databaseOpen", dbInited);
+//    const bool dbInited = initDatabase();
+//    root->setProperty("databaseOpen", dbInited);
     root->setProperty("word", m_word);
     root->setProperty("ipa", m_ipa);
     root->setProperty("meaning", m_meaning);
@@ -124,12 +131,51 @@ void ApplicationUI::showFilePicker()
 void ApplicationUI::onFileSelected(const QStringList&list)
 {
     qDebug() << "Size : " << list.size();
-    DictExtractor dict;
+//    DictExtractor dict;
+
+    const bool dbInited = initDatabase();
+    if (!dbInited) {
+        return;
+    }
+    SqlDataAccess *sqlda = new SqlDataAccess(DB_PATH);
+    QVariantList contact;
+//    QString word = "lass";
+//    QString ipa = "lass";
+//    QString type = "z";
+//    QString meaning = "asd";
+//    contact << word << ipa << type << meaning;
+//    sqlda->execute("INSERT INTO words"
+//            "    (word, ipa, type, meaning) "
+//            "    VALUES (:word, :ipa, :type, :meaning)", contact);
+//
+//    bool success = false;
+//    if (!sqlda->hasError()) {
+//        alert(tr("Create record succeeded."));
+//        success = true;
+//    } else {
+//        const DataAccessError error = sqlda->error();
+//        alert(tr("Create record error: %1").arg(error.errorMessage()));
+//    }
+
     for (int i = 0; i < list.size(); i++) {
         qDebug() << list.value(i);
         QString ld2file = list.value(i);
-        QString outfile = list.value(i) + "_out";
-        dict.loadFile(ld2file, outfile);
+        //QString outfile = list.value(i) + "_out";
+        JsonDataAccess jda;
+        QVariant json = jda.load(ld2file);
+        QList<QVariant> list = json.toList();
+        for (int i = 0; i < list.size(); i++) {
+            QMap<QString, QVariant> map = list[i].toMap();
+            qDebug() << map["word"].toString() << ":" << map["ipa"].toString();
+            QVariantList params;
+            params << map["word"].toString() << map["ipa"].toString() << ""
+                    << map["meaning"].toString();
+            sqlda->execute("INSERT INTO words"
+                    "    (word, ipa, type, meaning) "
+                    "    VALUES (:word, :ipa, :type, :meaning)", params);
+        }
+
+        // dict.loadFile(ld2file, outfile);
         // Lingoes ldx(ld2file, true);
         // ldx.extractToFile(outfile);
     }
@@ -151,15 +197,15 @@ bool ApplicationUI::initDatabase()
     }
 
     SqlDataAccess *sqlda = new SqlDataAccess(DB_PATH);
-//    sqlda->execute("DROP TABLE IF EXISTS words");
-//    if (!sqlda->hasError()) {
-//        qDebug() << "Table dropped.";
-//    } else {
-//        const DataAccessError error = sqlda->error();
-//        alert(tr("Drop table error: %1").arg(error.errorMessage()));
-//    }
+    sqlda->execute("DROP TABLE IF EXISTS words");
+    if (!sqlda->hasError()) {
+        qDebug() << "Table dropped.";
+    } else {
+        const DataAccessError error = sqlda->error();
+        alert(tr("Drop table error: %1").arg(error.errorMessage()));
+    }
 
-    const QString createSQL = "CREATE TABLE IF NOT EXISTS words "
+    const QString createSQL = "CREATE TABLE words "
             "  (id INTEGER PRIMARY KEY AUTOINCREMENT, "
             "  word VARCHAR, "
             "  ipa VARCHAR, "
@@ -170,7 +216,7 @@ bool ApplicationUI::initDatabase()
         qDebug() << "Table created.";
     } else {
         const DataAccessError error = sqlda->error();
-        alert(tr("Create table error: %1").arg(error.errorMessage()));
+//        alert(tr("Create table error: %1").arg(error.errorMessage()));
         return false;
     }
     return true;
@@ -197,43 +243,14 @@ QString ApplicationUI::meaning() const
 }
 bool ApplicationUI::createRecord()
 {
-    qDebug() << "Run createRecord";
     SqlDataAccess *sqlda = new SqlDataAccess(DB_PATH);
-    QVariantList contact;
-    QString word = "lass";
-    QString ipa = "lass";
-    QString type = "z";
-    QString meaning = "asd";
-    contact << word << ipa << type << meaning;
-    sqlda->execute("INSERT INTO words"
-            "    (word, ipa, type, meaning) "
-            "    VALUES (:word, :ipa, :type, :meaning)", contact);
-
-    bool success = false;
-    if (!sqlda->hasError()) {
-        alert(tr("Create record succeeded."));
-        success = true;
-    } else {
-        const DataAccessError error = sqlda->error();
-        alert(tr("Create record error: %1").arg(error.errorMessage()));
-    }
-    return success;
-}
-
-void ApplicationUI::readRecords()
-{
-    // 1. Create the local DB connection via SqlDataAccess instance. Note, creating instance
-    //    Will automatically open a connection to the database.
-    SqlDataAccess *sqlda = new SqlDataAccess(DB_PATH);
-
-    // 2. Create a query to search for the records
-    //    IMPORTANT NOTE: If accepting user input and not using bindings, be sure
-    //    to escape it to allow quote characters, and prevent SQL Injection attacks.
-    //    The below example is not a prepared statement and does not use bindings as
-    //    there is no user input to accept.
-
     const QString sqlQuery = "SELECT id, word, ipa, type, meaning FROM words WHERE id = :id";
     QVariantList params;
+    if (currentWord < 1) {
+        currentWord = 1;
+    } else if (currentWord > 3000) {
+        currentWord = 3000;
+    }
     params << currentWord;
     QVariant result = sqlda->execute(sqlQuery, params);
     if (!sqlda->hasError()) {
@@ -251,29 +268,66 @@ void ApplicationUI::readRecords()
                 m_ipa = map["ipa"].toString();
                 m_type = map["type"].toString();
                 m_meaning = map["meaning"].toString();
-                qDebug() << "Set" << m_word <<"::"<< m_meaning;
+                qDebug() << "Set" << m_word << "::" << m_meaning;
                 m_dataModel->insert(word1);
             }
-//            for (int i = 0; i < recordsRead; i++) {
-//                QVariantMap map = list.at(i).value<QVariantMap>();
-//                Word *word = new Word(map["id"].toInt(), map["word"].toString(),
-//                        map["ipa"].toString(), map["type"].toString(), map["meaning"].toString());
-//                Q_UNUSED(word);
-//                m_dataModel->insert(word);
-//            }
+        }
+        qDebug() << "Read " << recordsRead << " records succeeded + ID: " << currentWord;
 
+        if (recordsRead > 0) {
+            currentWord++;
+        }
+    } else {
+        alert(tr("Read records failed: %1").arg(sqlda->error().errorMessage()));
+    }
+    return (1 == 1);
+}
+
+void ApplicationUI::readRecords()
+{
+    // 1. Create the local DB connection via SqlDataAccess instance. Note, creating instance
+    //    Will automatically open a connection to the database.
+    SqlDataAccess *sqlda = new SqlDataAccess(DB_PATH);
+
+    // 2. Create a query to search for the records
+    //    IMPORTANT NOTE: If accepting user input and not using bindings, be sure
+    //    to escape it to allow quote characters, and prevent SQL Injection attacks.
+    //    The below example is not a prepared statement and does not use bindings as
+    //    there is no user input to accept.
+
+    const QString sqlQuery = "SELECT id, word, ipa, type, meaning FROM words WHERE id = :id";
+    QVariantList params;
+    if (currentWord < 1) {
+        currentWord = 1;
+    } else if (currentWord > 3000) {
+        currentWord = 3000;
+    }
+    params << currentWord;
+    QVariant result = sqlda->execute(sqlQuery, params);
+    if (!sqlda->hasError()) {
+        int recordsRead = 0;
+        m_dataModel->clear();
+        if (!result.isNull()) {
+            QVariantList list = result.value<QVariantList>();
+            recordsRead = list.size();
+            if (recordsRead > 0) {
+                QVariantMap map = list.at(0).value<QVariantMap>();
+                Word* word1 = new Word(map["id"].toInt(), map["word"].toString(),
+                        map["ipa"].toString(), map["type"].toString(), map["meaning"].toString());
+                currentWord = map["id"].toInt();
+                m_word = map["word"].toString();
+                m_ipa = map["ipa"].toString();
+                m_type = map["type"].toString();
+                m_meaning = map["meaning"].toString();
+                qDebug() << "Set" << m_word << "::" << m_meaning;
+                m_dataModel->insert(word1);
+            }
         }
 
         qDebug() << "Read " << recordsRead << " records succeeded + ID: " << currentWord;
 
-        if (recordsRead == 0) {
-            alert(tr("The customer table is empty."));
+        if (recordsRead != 0) {
             currentWord--;
-            if (currentWord < 0) {
-                currentWord = 1;
-            }
-        } else {
-            currentWord++;
         }
     } else {
         alert(tr("Read records failed: %1").arg(sqlda->error().errorMessage()));

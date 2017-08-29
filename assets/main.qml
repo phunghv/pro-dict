@@ -38,16 +38,14 @@ Page {
                     current = event.localX;
                 }
                 if (ui.sdu(10) < (event.localX - current)) {
-                    wordView.wordText = root.word;
                     wordView.nextWord();
                 } else if (ui.sdu(10) < (current - event.localX)) {
-                    wordView.wordText = qsTr("Left") + (current - event.localX);
                     wordView.previousWord();
                 }
             } else if (event.touchType == TouchType.Up) {
             } else {
                 current = event.localX;
-                wordView.wordText = qsTr("---")
+                //                wordView.wordText = qsTr("---")
             }
         }
         Word {
@@ -61,34 +59,47 @@ Page {
             onChangeNextWord: {
                 _app.readRecords();
                 wordView.wordText = _app.word;
+                meaning.text = "<html>" + _app.meaning + "</html>"
+                wordView.ipaText = _app.ipa
                 nextWordTail();
             }
             onChangePreviosWord: {
                 _app.createRecord();
                 wordView.wordText = _app.word;
+                meaning.text = "<html>" + _app.meaning + "</html>"
+                wordView.ipaText = _app.ipa
                 previosWordTail();
             }
         }
-
         TextArea {
+            id: meaning
+            minWidth: 700
+            minHeight: 500
+            text: "<html>" + _app.meaning + "</html>"
+            maximumLength: 1000
+            editable: false
+            focusHighlightEnabled: true
+            inputMode: TextAreaInputMode.Text
+            textFormat: TextFormat.Html
+            scrollMode: TextAreaScrollMode.Elastic
+            input.keyLayout: KeyLayout.Text
+            preferredWidth: 5.0
+            preferredHeight: 5.0
             layoutProperties: AbsoluteLayoutProperties {
                 positionX: 0
-                positionY: ui.sdu(30)
+                positionY: ui.sdu(25)
             }
-            maxWidth: ui.sdu(80)
-            id: viewMeaning
-            text: _app.meaning
         }
-        Button {
-            id: btnSelectFile
-            text: qsTr("Load")
-            layoutProperties: AbsoluteLayoutProperties {
-                positionX: 0
-                positionY: ui.sdu(50)
-            }
-            onClicked: {
+
+    }
+    Menu.definition: MenuDefinition {
+        settingsAction: SettingsActionItem {
+            title: qsTr("Load")
+            onTriggered: {
                 _app.showFilePicker();
             }
+        }
+        helpAction: HelpActionItem {
         }
     }
 }

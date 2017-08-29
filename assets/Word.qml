@@ -7,6 +7,7 @@ Container {
     property alias showNextAnimStartX: afterNext.fromX
     property alias showPreAnimStartX: afterPrevious.fromX
     property alias wordText: word.text
+    property alias ipaText : ipa.text
     property int clicked: 0
     signal changeNextWord
     signal changePreviosWord
@@ -66,7 +67,7 @@ Container {
         }
         Label {
             id: type
-            text: qsTr("adjective ")
+            text: qsTr("")
             textStyle.fontSize: FontSize.Small
             textStyle.fontStyle: FontStyle.Italic
             horizontalAlignment: HorizontalAlignment.Left

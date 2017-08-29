@@ -4,42 +4,28 @@
 <context>
     <name>ApplicationUI</name>
     <message>
-        <location filename="../src/applicationui.cpp" line="148"/>
+        <location filename="../src/applicationui.cpp" line="194"/>
         <source>Error opening connection to the database: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/applicationui.cpp" line="173"/>
-        <source>Create table error: %1</source>
+        <location filename="../src/applicationui.cpp" line="205"/>
+        <source>Drop table error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/applicationui.cpp" line="214"/>
-        <source>Create record succeeded.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/applicationui.cpp" line="218"/>
-        <source>Create record error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/applicationui.cpp" line="270"/>
-        <source>The customer table is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/applicationui.cpp" line="279"/>
+        <location filename="../src/applicationui.cpp" line="281"/>
+        <location filename="../src/applicationui.cpp" line="333"/>
         <source>Read records failed: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/applicationui.cpp" line="285"/>
+        <location filename="../src/applicationui.cpp" line="339"/>
         <source>OK</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/applicationui.cpp" line="286"/>
+        <location filename="../src/applicationui.cpp" line="340"/>
         <source>Alert</source>
         <translation type="unfinished"></translation>
     </message>
@@ -47,22 +33,22 @@
 <context>
     <name>Word</name>
     <message>
-        <location filename="../assets/Word.qml" line="55"/>
+        <location filename="../assets/Word.qml" line="56"/>
         <source>Question</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../assets/Word.qml" line="69"/>
-        <source>adjective </source>
-        <translation type="unfinished"></translation>
+        <location filename="../assets/Word.qml" line="70"/>
+        <source></source>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../assets/Word.qml" line="77"/>
+        <location filename="../assets/Word.qml" line="78"/>
         <source>/</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../assets/Word.qml" line="77"/>
+        <location filename="../assets/Word.qml" line="78"/>
         <source>ˈkwes.tʃən</source>
         <translation type="unfinished"></translation>
     </message>
@@ -75,17 +61,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="44"/>
-        <source>Left</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../assets/main.qml" line="50"/>
-        <source>---</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../assets/main.qml" line="84"/>
+        <location filename="../assets/main.qml" line="97"/>
         <source>Load</source>
         <translation type="unfinished"></translation>
     </message>
